@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
+
+namespace NoteTakingApp
+{
+    public partial class Form2 : Form
+    {
+        public Form2()
+        {
+            InitializeComponent();
+        }
+
+        private void textBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (textBox1.Text == "Enter note title...")
+            {
+                textBox1.Text = "";
+                textBox1.ForeColor = Color.Black;
+            }
+        }
+
+        private void textBox1_Validating(object sender, CancelEventArgs e)
+        {
+            if (textBox1.Text == "")
+            {
+                textBox1.Text = "Enter note title...";
+                textBox1.ForeColor = Color.Gray;
+            }
+        }
+
+        private void button1_MouseClick(object sender, MouseEventArgs e)
+        {
+            using (SqlConnection sq = new SqlConnection(@"Data Source=LAB109PC10\SQLEXPRESS; Initial Catalog=NoteDB1; Integrated Security=True; Encrypt=False;"))
+            {
+                sq.Open();
+                SqlCommand cmd = new SqlCommand("INSERT INTO Notes (Title, [Content], TimeStamp) VALUES (@Title, @Content, @TimeStamp)", sq);
+                cmd.Parameters.AddWithValue("title", textBox1.Text);
+                cmd.Parameters.AddWithValue("content", richTextBox1.Text);
+                cmd.Parameters.AddWithValue("timeStamp", DateTime.Now);
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Your Note has been saved.", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Hide();
+
+                Form1 form = new Form1();
+                form.ShowDialog();
+            }
+        }
+    }
+}
