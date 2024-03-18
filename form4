@@ -1,0 +1,46 @@
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace NoteTakingApp
+{
+    public partial class Form4 : Form
+    {
+        public Form4()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection sq = new SqlConnection(@"Data Source=LAB109PC10\SQLEXPRESS; Initial Catalog=NoteDB1; Integrated Security=True; Encrypt=False;"))
+            {
+                sq.Open();
+                SqlCommand cmd = new SqlCommand("Select [Content] from Notes where Title = @Title", sq);
+                cmd.Parameters.AddWithValue("Title", textBox1.Text);
+                string content = (cmd.ExecuteScalar()).ToString();
+                richTextBox1.Text = content;
+
+                cmd = new SqlCommand("Select timestamp from Notes where Title = @Title", sq);
+                cmd.Parameters.AddWithValue("Title", textBox1.Text);
+                content = (cmd.ExecuteScalar()).ToString();
+                dateLabel.Text = content;
+
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Form1 form = new Form1();
+            Hide();
+            form.ShowDialog();
+        }
+    }
+}
